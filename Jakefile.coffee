@@ -22,9 +22,9 @@ task 'dist', ['vendor:update'], ->
 
     # remove implicit loading of variables. apps should do this themselves 
     # so that they can customize them.
-    if 'bootstrap.js' == filename or 'responsive.js' == filename
+    if 'bootstrap.less' == filename or 'responsive.less' == filename
       body = FS.readFileSync PATH.resolve(CSS_SRC, filename), 'utf8'
-      body.replace /@import "variables";/, ""
+      body = body.replace /@import "variables.less";.*/g, ''
       FS.writeFileSync PATH.resolve(CSS_DST, filename), body
     else
       jake.cpR PATH.resolve(CSS_SRC, filename), PATH.resolve(CSS_DST, filename)
@@ -37,31 +37,46 @@ task 'dist', ['vendor:update'], ->
   FS.readdirSync(JS_SRC).forEach (filename) ->
     return if PATH.extname(filename) != '.js' # skip tests
     body = FS.readFileSync PATH.resolve(JS_SRC, filename), 'utf8'
-    body = '''
+    body = """
     //
     // Automatically generated from source.
     //
 
-    var $ = require('jquery');
+    $ = $ || require('jquery');
 
     #{body}
-    '''
+    """
+
+    filename = filename.replace(/^bootstrap-/,'') # remove redundancies!
     FS.writeFileSync PATH.resolve(JS_DST, filename), body
 
   # copy images to img directory
   IMG_DST = PATH.resolve __dirname, 'img'
   IMG_SRC = PATH.resolve VENDOR_BOOTSTRAP, 'img'
+  jake.mkdirP IMG_DST
   FS.readdirSync(IMG_SRC).forEach (filename) ->
-    jake.cpR PATH.resolve(IMG_SRC, filename), PATH,resolve(IMG_DST, filename)
+    jake.cpR PATH.resolve(IMG_SRC, filename), PATH.resolve(IMG_DST, filename)
 
-  # Update version number of package.json
+  # Copy and tweak package.json
   JSON_DST = PATH.resolve __dirname, 'package.json'
   JSON_SRC = PATH.resolve VENDOR_BOOTSTRAP, 'package.json'
-  version  = JSON.parse(FS.readFileSync JSON_SRC, 'utf8').version
-  packageJSON = JSON.parse FS.readFileSync(JSON_DST, 'utf8')
-  if packageJSON.version != version      
-    packageJSON.version = version
-    FS.writeFileSync JSON_DST, 'utf8', JSON.stringify(packageJSON, null, 2)
+  packageJSON = JSON.parse FS.readFileSync(JSON_SRC, 'utf8')
+  
+  packageJSON.name = "bootstrap-css"
+  packageJSON.description = 
+    "Asset pipeline compatible version. #{packageJSON.description}"
+  packageJSON.keywords.push 'convoy'
+  packageJSON.dependencies =
+    'jquery': '~1.7',
+    'less': 'latest'
+    
+  packageJSON.maintainers = ['Charles Jolley <charles@sproutcore.com>']
+  packageJSON.homepage = "http://github.com/charlesjolley/bootstrap-css"
+
+  delete packageJSON.devDependencies
+  delete packageJSON.scripts
+
+  FS.writeFileSync JSON_DST, JSON.stringify(packageJSON, null, 2)
 
   console.log 'Done.'
 

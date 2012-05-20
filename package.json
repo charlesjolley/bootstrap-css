@@ -1,19 +1,29 @@
 {
-  "name": "ember",
-  "summary": "Ember - JavaScript Application Framework",
-  "description": "Ember - JavaScript Application Framework",
-  "homepage": "http://github.com/emberjs/ember.js",
-  "author": "Charles Jolley",
-  "version": "v0.9.7-1",
-  "dependencies": {
-    "handlebars": "~> 1.0.0-beta.6",
-    "window": "git://github.com/charlesjolley/node-window.git#master",
-    "jquery": "~> 1.7",
-    "convoy": "~0.3"
-  },
-  "main": "./ember.js",
+  "name": "bootstrap-css",
+  "description": "Asset pipeline compatible version. HTML, CSS, and JS toolkit from Twitter.",
+  "version": "2.0.3",
+  "keywords": [
+    "bootstrap",
+    "css",
+    "convoy"
+  ],
+  "homepage": "http://github.com/charlesjolley/bootstrap-css",
+  "author": "Twitter Inc.",
   "repository": {
     "type": "git",
-    "url": "git://github.com/charlesjolley/node-ember.git"
-  }
+    "url": "https://github.com/twitter/bootstrap.git"
+  },
+  "licenses": [
+    {
+      "type": "Apache-2.0",
+      "url": "http://www.apache.org/licenses/LICENSE-2.0"
+    }
+  ],
+  "dependencies": {
+    "jquery": "~1.7",
+    "less": "latest"
+  },
+  "maintainers": [
+    "Charles Jolley <charles@sproutcore.com>"
+  ]
 }
